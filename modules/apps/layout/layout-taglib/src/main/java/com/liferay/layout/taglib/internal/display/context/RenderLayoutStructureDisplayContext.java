@@ -18,6 +18,7 @@ import com.liferay.asset.info.display.contributor.util.ContentAccessor;
 import com.liferay.fragment.entry.processor.helper.FragmentEntryProcessorHelper;
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.renderer.DefaultFragmentRendererContext;
+import com.liferay.fragment.service.FragmentEntryLinkLocalServiceUtil;
 import com.liferay.frontend.token.definition.FrontendToken;
 import com.liferay.frontend.token.definition.FrontendTokenDefinition;
 import com.liferay.frontend.token.definition.FrontendTokenDefinitionRegistry;
@@ -36,6 +37,7 @@ import com.liferay.layout.responsive.ResponsiveLayoutStructureUtil;
 import com.liferay.layout.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.layout.util.constants.LayoutDataItemTypeConstants;
 import com.liferay.layout.util.structure.ContainerStyledLayoutStructureItem;
+import com.liferay.layout.util.structure.FragmentStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.layout.util.structure.LayoutStructureItem;
 import com.liferay.layout.util.structure.LayoutStructureItemUtil;
@@ -53,8 +55,10 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutSetLocalServiceUtil;
+import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -286,6 +290,13 @@ public class RenderLayoutStructureDisplayContext {
 	public String getCssClass(
 			StyledLayoutStructureItem styledLayoutStructureItem)
 		throws Exception {
+
+		if ((styledLayoutStructureItem instanceof
+				FragmentStyledLayoutStructureItem) &&
+			!_isViewPermissionOfLayoutPortlet(styledLayoutStructureItem)) {
+
+			return new StringBuilder().toString();
+		}
 
 		StringBundler cssClassSB = new StringBundler(35);
 
@@ -522,6 +533,13 @@ public class RenderLayoutStructureDisplayContext {
 
 	public String getStyle(StyledLayoutStructureItem styledLayoutStructureItem)
 		throws Exception {
+
+		if ((styledLayoutStructureItem instanceof
+				FragmentStyledLayoutStructureItem) &&
+			!_isViewPermissionOfLayoutPortlet(styledLayoutStructureItem)) {
+
+			return new StringBuilder().toString();
+		}
 
 		StringBundler styleSB = new StringBundler(59);
 
@@ -1165,6 +1183,44 @@ public class RenderLayoutStructureDisplayContext {
 			requestContextMapper.map(_httpServletRequest));
 
 		return _segmentsEntryIds;
+	}
+
+	private boolean _isViewPermissionOfLayoutPortlet(
+			StyledLayoutStructureItem styledLayoutStructureItem)
+		throws Exception {
+
+		long fragmentEntryLinkId =
+			((FragmentStyledLayoutStructureItem)styledLayoutStructureItem).
+				getFragmentEntryLinkId();
+
+		FragmentEntryLink fragmentEntryLink =
+			FragmentEntryLinkLocalServiceUtil.getFragmentEntryLink(
+				fragmentEntryLinkId);
+
+		JSONObject fragmentEntryJSONObject = JSONFactoryUtil.createJSONObject(
+			fragmentEntryLink.getEditableValues());
+
+		String portletId = fragmentEntryJSONObject.getString("portletId");
+
+		if (portletId.equals("")) {
+			return true;   // return true when the portlet is fragment, and ignore when the portlet is widget
+		}
+
+		String instanceId = fragmentEntryJSONObject.getString("instanceId");
+
+		if (!instanceId.equals("")) {
+			StringBuilder portletIdSB = new StringBuilder();
+
+			portletIdSB.append(portletId);
+			portletIdSB.append("_INSTANCE_");
+			portletIdSB.append(instanceId);
+
+			portletId = portletIdSB.toString();
+		}
+
+		return PortletPermissionUtil.contains(
+			_themeDisplay.getPermissionChecker(), _themeDisplay.getLayout(),
+			portletId, ActionKeys.VIEW);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
