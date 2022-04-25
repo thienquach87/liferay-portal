@@ -122,8 +122,10 @@ public class LayoutSiteNavigationMenuItemType
 			return false;
 		}
 
-		if (!ArrayUtil.contains(
-				portletDataContext.getLayoutIds(), layout.getLayoutId())) {
+		long[] layoutIds = portletDataContext.getLayoutIds();
+
+		if ((layoutIds != null) &&
+			!ArrayUtil.contains(layoutIds, layout.getLayoutId())) {
 
 			return false;
 		}
