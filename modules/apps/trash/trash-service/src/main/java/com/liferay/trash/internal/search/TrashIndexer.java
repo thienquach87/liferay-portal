@@ -14,6 +14,7 @@
 
 package com.liferay.trash.internal.search;
 
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.BooleanQuery;
@@ -35,6 +36,7 @@ import com.liferay.trash.model.TrashEntry;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -133,14 +135,35 @@ public class TrashIndexer extends BaseIndexer<TrashEntry> {
 			return;
 		}
 
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT, true);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, true);
 		addSearchTerm(
 			searchQuery, searchContext, Field.REMOVED_BY_USER_NAME, true);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE, true);
 		addSearchTerm(searchQuery, searchContext, Field.TYPE, false);
 		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, true);
+
+		Set<Locale> supportLocales = LanguageUtil.getAvailableLocales();
+
+		long[] groupIds = searchContext.getGroupIds();
+
+		if ((groupIds != null) && (groupIds.length > 0)) {
+			supportLocales = LanguageUtil.getAvailableLocales(groupIds[0]);
+		}
+
+		for (Locale locale : supportLocales) {
+			String localizedTitle = Field.getLocalizedName(locale, Field.TITLE);
+
+			String localizedDescription = Field.getLocalizedName(
+				locale, Field.DESCRIPTION);
+
+			String localizedContent = Field.getLocalizedName(
+				locale, Field.CONTENT);
+
+			addSearchTerm(searchQuery, searchContext, localizedTitle, true);
+
+			addSearchTerm(
+				searchQuery, searchContext, localizedDescription, true);
+
+			addSearchTerm(searchQuery, searchContext, localizedContent, true);
+		}
 	}
 
 	@Override
