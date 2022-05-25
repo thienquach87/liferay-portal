@@ -94,7 +94,11 @@ export function ModalAddDefaultSortColumn({
 	const onSubmit = (event: FormEvent) => {
 		event.preventDefault();
 
-		const objectFieldName = selectedObjectSortColumn?.objectFieldName;
+		let objectFieldName = selectedObjectSortColumn?.objectFieldName;
+
+		if (!objectFieldName && !!filtredObjectSortColumn.length) {
+			objectFieldName = filtredObjectSortColumn[0].objectFieldName;
+		}
 
 		if (isEditingSort) {
 			dispatch({
