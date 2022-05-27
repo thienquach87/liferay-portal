@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public interface ScopedCSSVariables {
 
-	public Map<String, String> getCSSVariables();
+	public Map<String, Object> getCSSVariables();
 
 	public String getScope();
 
