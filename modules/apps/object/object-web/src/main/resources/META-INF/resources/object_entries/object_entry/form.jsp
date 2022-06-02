@@ -139,7 +139,8 @@ portletDisplay.setURLBack(backURL);
 							const path = <portlet:namespace />getPath(
 								externalReferenceCode
 							);
-
+							if(typeof Object.values(values)[0].key === 'undefined')
+								Object.values(values)[0].key='';
 							Liferay.Util.fetch(path, {
 								body: JSON.stringify(values),
 								headers: new Headers({
