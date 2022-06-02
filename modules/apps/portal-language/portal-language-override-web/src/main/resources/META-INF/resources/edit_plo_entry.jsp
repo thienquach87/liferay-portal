@@ -136,12 +136,13 @@ renderResponse.setTitle(editDisplayContext.getPageTitle());
 						LocalizedValuesMap valuesLocalizedValuesMap = editDisplayContext.getValuesLocalizedValuesMap();
 
 						LocalizedValuesMap originalValuesLocalizedValuesMap = editDisplayContext.getOriginalValuesLocalizedValuesMap();
+						String direction = LanguageUtil.get(request, "lang.dir");
 
 						for (Locale availableLocale : editDisplayContext.getAvailableLocales()) {
 							String languageId = LanguageUtil.getLanguageId(availableLocale);
 						%>
 
-							<div class="form-group" dir="<%= LanguageUtil.get(availableLocale, "lang.dir") %>" lang="<%= LocaleUtil.toW3cLanguageId(availableLocale) %>">
+							<div class="form-group" dir="<%= direction %>" lang="<%= LocaleUtil.toW3cLanguageId(availableLocale) %>">
 								<aui:input label="<%= TextFormatter.format(languageId, TextFormatter.O) %>" name='<%= "value_" + availableLocale %>' value="<%= valuesLocalizedValuesMap.get(availableLocale) %>" wrappedField="<%= true %>" />
 
 								<c:if test="<%= editDisplayContext.isShowOriginalValues() %>">
