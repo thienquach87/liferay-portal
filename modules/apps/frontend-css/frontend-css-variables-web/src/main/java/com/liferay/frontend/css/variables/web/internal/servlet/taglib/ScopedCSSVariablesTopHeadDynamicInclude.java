@@ -110,10 +110,10 @@ public class ScopedCSSVariablesTopHeadDynamicInclude
 			printWriter.print(scopedCSSVariables.getScope());
 			printWriter.print(" {\n");
 
-			Map<String, String> cssVariables =
+			Map<String, Object> cssVariables =
 				scopedCSSVariables.getCSSVariables();
 
-			for (Map.Entry<String, String> entry : cssVariables.entrySet()) {
+			for (Map.Entry<String, Object> entry : cssVariables.entrySet()) {
 				printWriter.print("\t\t--");
 				printWriter.print(entry.getKey());
 				printWriter.print(": ");

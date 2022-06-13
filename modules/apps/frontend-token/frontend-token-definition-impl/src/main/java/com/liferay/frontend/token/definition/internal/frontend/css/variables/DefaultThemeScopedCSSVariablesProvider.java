@@ -64,7 +64,7 @@ public class DefaultThemeScopedCSSVariablesProvider
 			return Collections.emptyList();
 		}
 
-		Map<String, String> cssVariables = new HashMap<>();
+		Map<String, Object> cssVariables = new HashMap<>();
 
 		Collection<FrontendToken> frontendTokens =
 			frontendTokenDefinition.getFrontendTokens();
@@ -87,7 +87,7 @@ public class DefaultThemeScopedCSSVariablesProvider
 			new ScopedCSSVariables() {
 
 				@Override
-				public Map<String, String> getCSSVariables() {
+				public Map<String, Object> getCSSVariables() {
 					return cssVariables;
 				}
 
