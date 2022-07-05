@@ -29,6 +29,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.util.NumericDDMFormFieldUtil;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItem;
@@ -98,6 +99,8 @@ import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.portal.vulcan.util.TransformUtil;
 import com.liferay.taglib.servlet.PipingServletResponseFactory;
+
+import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1062,6 +1065,14 @@ public class ObjectEntryDisplayContext {
 				new UnlocalizedValue(listEntry.getKey()));
 		}
 		else {
+			if (value instanceof Double) {
+				DecimalFormat defaultDecimalFormat =
+					NumericDDMFormFieldUtil.getDecimalFormat(
+						_objectRequestHelper.getLocale());
+
+				value = defaultDecimalFormat.format(value);
+			}
+
 			ddmFormFieldValue.setValue(
 				new UnlocalizedValue(String.valueOf(value)));
 		}
