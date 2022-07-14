@@ -19,6 +19,7 @@ import com.liferay.fragment.listener.FragmentEntryLinkListener;
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.processor.DefaultFragmentEntryProcessorContext;
 import com.liferay.fragment.processor.FragmentEntryProcessorRegistry;
+import com.liferay.fragment.service.persistence.FragmentEntryLinkPersistence;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.layout.util.structure.DeletedLayoutStructureItem;
@@ -31,12 +32,15 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import org.osgi.service.component.annotations.Component;
@@ -87,14 +91,31 @@ public class DropZoneFragmentEntryLinkListener
 		}
 	}
 
+	@Reference
+	protected FragmentEntryLinkPersistence fragmentEntryLinkPersistence;
+
 	private void _addOrRestoreDropZoneLayoutStructureItem(
 		LayoutStructure layoutStructure,
-		LayoutStructureItem parentLayoutStructureItem) {
+		LayoutStructureItem parentLayoutStructureItem,
+		List<String> childrenItemIdsToRemove, int position) {
 
 		LayoutStructureItem existingLayoutStructureItem = null;
 
 		List<DeletedLayoutStructureItem> deletedLayoutStructureItems =
 			layoutStructure.getDeletedLayoutStructureItems();
+		int deletedLayoutStructureItemPosition = position;
+		List<DeletedLayoutStructureItem> deletedLayoutStructureItemsTmp =
+			new ArrayList<>(deletedLayoutStructureItems);
+
+		deletedLayoutStructureItemsTmp.forEach(
+			deletedLayoutStructureItem -> {
+				if (childrenItemIdsToRemove.contains(
+						deletedLayoutStructureItem.getItemId())) {
+
+					deletedLayoutStructureItems.remove(
+						deletedLayoutStructureItem);
+				}
+			});
 
 		for (DeletedLayoutStructureItem deletedLayoutStructureItem :
 				deletedLayoutStructureItems) {
@@ -108,6 +129,8 @@ public class DropZoneFragmentEntryLinkListener
 					parentLayoutStructureItem.getItemId())) {
 
 				existingLayoutStructureItem = layoutStructureItem;
+				deletedLayoutStructureItemPosition =
+					deletedLayoutStructureItem.getPosition();
 
 				break;
 			}
@@ -116,10 +139,16 @@ public class DropZoneFragmentEntryLinkListener
 		if (existingLayoutStructureItem != null) {
 			layoutStructure.unmarkLayoutStructureItemForDeletion(
 				existingLayoutStructureItem.getItemId());
+
+			if (position != deletedLayoutStructureItemPosition) {
+				layoutStructure.moveLayoutStructureItem(
+					existingLayoutStructureItem.getItemId(),
+					parentLayoutStructureItem.getItemId(), position);
+			}
 		}
 		else {
 			layoutStructure.addFragmentDropZoneLayoutStructureItem(
-				parentLayoutStructureItem.getItemId(), -1);
+				parentLayoutStructureItem.getItemId(), position);
 		}
 	}
 
@@ -133,6 +162,22 @@ public class DropZoneFragmentEntryLinkListener
 		document.outputSettings(outputSettings);
 
 		return document;
+	}
+
+	private List<String> _getElementUuids(Elements elements) {
+		List<String> elementsUuids = new ArrayList<>();
+
+		for (Element element : elements) {
+			if (element.hasAttr("uuid")) {
+				Attributes elementAttributes = element.attributes();
+
+				String elementUuid = elementAttributes.get("uuid");
+
+				elementsUuids.add(elementUuid);
+			}
+		}
+
+		return elementsUuids;
 	}
 
 	private LayoutStructure _getLayoutStructure(
@@ -156,6 +201,24 @@ public class DropZoneFragmentEntryLinkListener
 		}
 
 		return LayoutStructure.of(data);
+	}
+
+	private List<String> _getRemovedDropZoneLayoutStructureItem(
+		List<String> childrenItemIds, Elements elements) {
+
+		List<String> elementsIds = _getElementUuids(elements);
+
+		List<String> childrenItemIdsToRemove = new ArrayList<>(childrenItemIds);
+
+		childrenItemIdsToRemove.addAll(elementsIds);
+
+		List<String> intersection = new ArrayList<>(childrenItemIds);
+
+		intersection.retainAll(elementsIds);
+
+		childrenItemIdsToRemove.removeAll(intersection);
+
+		return childrenItemIdsToRemove;
 	}
 
 	private void _updateLayoutPageTemplateStructure(
@@ -196,25 +259,31 @@ public class DropZoneFragmentEntryLinkListener
 			return;
 		}
 
-		List<String> childrenItemIds =
-			parentLayoutStructureItem.getChildrenItemIds();
+		List<String> childrenItemIdsToRemove =
+			_getRemovedDropZoneLayoutStructureItem(
+				parentLayoutStructureItem.getChildrenItemIds(), elements);
 
-		if (childrenItemIds.size() == elements.size()) {
-			return;
-		}
-
-		if (childrenItemIds.size() > elements.size()) {
-			List<String> childrenItemIdsToRemove = childrenItemIds.subList(
-				elements.size(), childrenItemIds.size());
-
+		if (childrenItemIdsToRemove.size() > 0) {
 			childrenItemIdsToRemove.forEach(
 				itemId -> layoutStructure.markLayoutStructureItemForDeletion(
 					itemId, Collections.emptyList()));
 		}
-		else {
-			for (int i = childrenItemIds.size(); i < elements.size(); i++) {
+
+		for (int i = 0; i < elements.size(); i++) {
+			Element element = elements.get(i);
+
+			if (!element.hasAttr("uuid")) {
 				_addOrRestoreDropZoneLayoutStructureItem(
-					layoutStructure, parentLayoutStructureItem);
+					layoutStructure, parentLayoutStructureItem,
+					childrenItemIdsToRemove, i);
+			}
+			else {
+				Attributes elementAttributes = element.attributes();
+
+				String itemUuId = elementAttributes.get("uuid");
+
+				layoutStructure.moveLayoutStructureItem(
+					itemUuId, parentLayoutStructureItem.getItemId(), i);
 			}
 		}
 

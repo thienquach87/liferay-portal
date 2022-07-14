@@ -564,11 +564,6 @@ public class FragmentEntryLinkLocalServiceImpl
 		fragmentEntryLink.setType(fragmentEntry.getType());
 		fragmentEntryLink.setLastPropagationDate(new Date());
 
-		fragmentEntryLink = fragmentEntryLinkPersistence.update(
-			fragmentEntryLink);
-
-		_updateFragmentEntryLinkLayout(fragmentEntryLink);
-
 		List<FragmentEntryLinkListener> fragmentEntryLinkListeners =
 			_fragmentEntryLinkListenerTracker.getFragmentEntryLinkListeners();
 
@@ -578,6 +573,11 @@ public class FragmentEntryLinkLocalServiceImpl
 			fragmentEntryLinkListener.
 				onUpdateFragmentEntryLinkConfigurationValues(fragmentEntryLink);
 		}
+
+		fragmentEntryLink = fragmentEntryLinkPersistence.update(
+			fragmentEntryLink);
+
+		_updateFragmentEntryLinkLayout(fragmentEntryLink);
 	}
 
 	private String _getProcessedHTML(
