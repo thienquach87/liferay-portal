@@ -96,6 +96,10 @@ public class SortParserImpl implements SortParser {
 	protected Optional<EntityField> getEntityFieldOptional(
 		Map<String, EntityField> entityFieldsMap, String fieldName) {
 
+		if (Objects.equals(fieldName, "externalReferenceCode")) {
+			return Optional.ofNullable(entityFieldsMap.get("id"));
+		}
+
 		if (fieldName.contains(StringPool.FORWARD_SLASH)) {
 			List<String> list = StringUtil.split(fieldName, '/');
 
