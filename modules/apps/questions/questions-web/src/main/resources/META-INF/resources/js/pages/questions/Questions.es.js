@@ -223,6 +223,7 @@ export default withRouter(
 						pageSize,
 						sort,
 					},
+					useCache: false
 				}).then((result) => ({
 					...result,
 					data: result.data.messageBoardThreadsRanked,
@@ -255,6 +256,7 @@ export default withRouter(
 							page,
 							pageSize,
 						},
+						useCache: false
 					}).then((result) => ({
 						...result,
 						data:
@@ -300,6 +302,7 @@ export default withRouter(
 						siteKey,
 						sort,
 					},
+					useCache: false
 				}).then((result) => ({
 					...result,
 					data: result.data.messageBoardThreads,
