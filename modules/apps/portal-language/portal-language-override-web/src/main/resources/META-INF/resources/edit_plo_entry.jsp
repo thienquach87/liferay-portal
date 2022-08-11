@@ -115,12 +115,6 @@ renderResponse.setTitle(editDisplayContext.getPageTitle());
 
 				<clay:content-row>
 					<div class="sheet-text">
-						<liferay-ui:icon
-							cssClass="font-weight-normal text-info"
-							icon="info-circle"
-							localizeMessage="<%= true %>"
-						/>
-
 						<span class="font-weight-bold text-info">
 							<clay:icon cssClass="mr-2" symbol="info-circle" /><liferay-ui:message key="please-add-at-least-one-translation-below" />
 						</span>
