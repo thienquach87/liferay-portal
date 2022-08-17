@@ -176,9 +176,22 @@ export default withRouter(
 																		answer.id,
 																},
 															}).then(() => {
-																deleteAnswer(
-																	answer
-																);
+																if (comments.length) {
+																	Promise.all(
+																		comments.map(({id}) =>
+																			deleteMessage({
+																				variables: {
+																					messageBoardMessageId: id,
+																				},
+																			})
+																		)
+																	).then(() => {
+																		deleteAnswer(answer);
+																	});
+																}
+																else {
+																	deleteAnswer(answer);
+																}
 															});
 														}}
 														onClose={() => {
