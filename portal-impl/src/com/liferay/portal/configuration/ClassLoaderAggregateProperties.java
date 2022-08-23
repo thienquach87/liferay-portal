@@ -47,6 +47,7 @@ import org.apache.commons.configuration.FileConfiguration;
 import org.apache.commons.configuration.FileSystem;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.PropertiesConfigurationLayout;
+import org.apache.commons.configuration.PropertyConverter;
 import org.apache.commons.configuration.SubsetConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
 
@@ -197,8 +198,37 @@ public class ClassLoaderAggregateProperties extends CompositeConfiguration {
 				new PropertiesConfiguration(url) {
 
 					@Override
+					public void addProperty(String key, Object value) {
+						if (containsKey(key) &&
+							!StringUtil.equalsIgnoreCase(
+								key, "include-and-override") &&
+							!StringUtil.equalsIgnoreCase(key, "include")) {
+
+							clearPropertyDirect(key);
+						}
+
+						fireEvent(EVENT_ADD_PROPERTY, key, value, true);
+						_addPropertyValues(
+							key, value,
+							isDelimiterParsingDisabled() ? '\0' :
+								getListDelimiter());
+						fireEvent(EVENT_ADD_PROPERTY, key, value, false);
+					}
+
+					@Override
 					public String getEncoding() {
 						return StringPool.UTF8;
+					}
+
+					private void _addPropertyValues(
+						String key, Object value, char delimiter) {
+
+						Iterator<?> iterator = PropertyConverter.toIterator(
+							value, delimiter);
+
+						while (iterator.hasNext()) {
+							addPropertyDirect(key, iterator.next());
+						}
 					}
 
 				};
@@ -326,8 +356,37 @@ public class ClassLoaderAggregateProperties extends CompositeConfiguration {
 				new PropertiesConfiguration(url) {
 
 					@Override
+					public void addProperty(String key, Object value) {
+						if (containsKey(key) &&
+							!StringUtil.equalsIgnoreCase(
+								key, "include-and-override") &&
+							!StringUtil.equalsIgnoreCase(key, "include")) {
+
+							clearPropertyDirect(key);
+						}
+
+						fireEvent(EVENT_ADD_PROPERTY, key, value, true);
+						_addPropertyValues(
+							key, value,
+							isDelimiterParsingDisabled() ? '\0' :
+								getListDelimiter());
+						fireEvent(EVENT_ADD_PROPERTY, key, value, false);
+					}
+
+					@Override
 					public String getEncoding() {
 						return StringPool.UTF8;
+					}
+
+					private void _addPropertyValues(
+						String key, Object value, char delimiter) {
+
+						Iterator<?> iterator = PropertyConverter.toIterator(
+							value, delimiter);
+
+						while (iterator.hasNext()) {
+							addPropertyDirect(key, iterator.next());
+						}
 					}
 
 				};
