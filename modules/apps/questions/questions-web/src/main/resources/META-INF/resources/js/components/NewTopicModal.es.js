@@ -61,14 +61,15 @@ export default function NewTopicModal({
 	};
 
 	const createTopic = () => {
-		if (isValidTopic(topicNameRef.current.value)) {
+		const topicName = topicNameRef.current.value.trim();
+		if (isValidTopic(topicName)) {
 			deleteCache();
 			if (currentSectionId) {
 				createNewSubTopic({
 					variables: {
 						description: topicDescriptionRef.current.value,
 						parentMessageBoardSectionId: currentSectionId,
-						title: topicNameRef.current.value,
+						title: topicName,
 					},
 				}).then(
 					({
@@ -88,7 +89,7 @@ export default function NewTopicModal({
 					variables: {
 						description: topicDescriptionRef.current.value,
 						siteKey: context.siteKey,
-						title: topicNameRef.current.value,
+						title: topicName,
 					},
 				}).then(({data: {createSiteMessageBoardSection: section}}) =>
 					onCreateNavigateTo(
