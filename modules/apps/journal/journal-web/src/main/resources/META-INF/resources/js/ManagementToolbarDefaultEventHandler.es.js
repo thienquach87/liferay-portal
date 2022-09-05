@@ -111,14 +111,18 @@ class ManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 	openDDMStructuresSelector() {
 		openSelectionModal({
 			onSelect: (selectedItem) => {
-				Liferay.Util.navigate(
-					addParams(
-						this.namespace +
-							'ddmStructureKey=' +
-							selectedItem.ddmstructurekey,
-						this.viewDDMStructureArticlesURL
-					)
-				);
+				if (selectedItem) {
+					const ddmStructureKey = selectedItem.ddmstructurekey;
+
+					Liferay.Util.navigate(
+						addParams(
+							{
+								[`${this.namespace}ddmStructureKey`]: ddmStructureKey,
+							},
+							this.viewDDMStructureArticlesURL
+						)
+					);
+				}
 			},
 			selectEventName: this.ns('selectDDMStructure'),
 			title: Liferay.Language.get('structures'),
