@@ -116,6 +116,7 @@ export function getValueDetailsFromItem(item, fieldName) {
 			if (property === 'LANG') {
 				const languageId = Liferay.ThemeDisplay.getLanguageId();
 				const BCP47LanguageId = Liferay.ThemeDisplay.getBCP47LanguageId();
+				const defaultInstanceLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 
 				if (navigatedValue[languageId]) {
 					formattedProperty = languageId;
@@ -123,8 +124,14 @@ export function getValueDetailsFromItem(item, fieldName) {
 				else if (navigatedValue[BCP47LanguageId]) {
 					formattedProperty = BCP47LanguageId;
 				}
+				else if (navigatedValue[defaultInstanceLanguageId]) {
+					formattedProperty = defaultInstanceLanguageId;
+				}
+				else if (navigatedValue['en_US']) {
+					formattedProperty = 'en_US';
+				}
 				else {
-					formattedProperty = Liferay.ThemeDisplay.getDefaultLanguageId();
+					formattedProperty = Object.keys(navigatedValue)[0];
 				}
 			}
 
