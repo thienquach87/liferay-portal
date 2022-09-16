@@ -177,7 +177,7 @@ public class ConfigurationImplTest {
 
 		testResourceClassLoader.addPropertiesResource(
 			ConfigurationImplTest.class.getName(),
-			"key1=value1,value2\nkey2=value3\nkey2=value4");
+			"key1=value1,value2\nkey2=value1,value2\nkey2=value3,value4");
 
 		ConfigurationImpl configurationImpl = new ConfigurationImpl(
 			testResourceClassLoader, ConfigurationImplTest.class.getName(),
@@ -189,7 +189,7 @@ public class ConfigurationImplTest {
 			new String[] {"value1", "value2"},
 			configurationImpl.getArray("key1"));
 		Assert.assertArrayEquals(
-			new String[] {"value3", "value4"},
+			new String[] {"value3","value4"},
 			configurationImpl.getArray("key2"));
 	}
 
