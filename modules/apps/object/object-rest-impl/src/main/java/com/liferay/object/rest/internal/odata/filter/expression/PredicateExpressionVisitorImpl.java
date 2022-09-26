@@ -266,9 +266,19 @@ public class PredicateExpressionVisitorImpl
 			return Optional.of(predicate);
 		}
 
+		String columnName = GetterUtil.getString(left);
+
+		if (columnName.equals("dateCreated")) {
+			columnName = "createDate";
+		}
+
+		if (columnName.equals("dateModified")) {
+			columnName = "modifiedDate";
+		}
+
 		Column<?, Object> column =
 			(Column<?, Object>)_objectFieldLocalService.getColumn(
-				_objectDefinitionId, GetterUtil.getString(left));
+				_objectDefinitionId, columnName);
 
 		if (Objects.equals(BinaryExpression.Operation.EQ, operation)) {
 			predicate = column.eq(right);
