@@ -26,14 +26,17 @@ import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.fragment.renderer.FragmentRendererController;
 import com.liferay.fragment.renderer.FragmentRendererTracker;
 import com.liferay.fragment.renderer.constants.FragmentRendererConstants;
+import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.fragment.service.FragmentEntryLocalService;
 import com.liferay.fragment.util.configuration.FragmentEntryConfigurationParser;
+import com.liferay.info.exception.InfoPermissionException;
 import com.liferay.info.exception.NoSuchFormVariationException;
 import com.liferay.info.form.InfoForm;
 import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemFormProvider;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.layout.content.page.editor.web.internal.comment.CommentUtil;
+import com.liferay.layout.content.page.editor.web.internal.util.layout.structure.LayoutStructureUtil;
 import com.liferay.layout.util.constants.LayoutDataItemTypeConstants;
 import com.liferay.layout.util.structure.FormStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.FragmentStyledLayoutStructureItem;
@@ -52,6 +55,7 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -100,6 +104,12 @@ public class FragmentEntryLinkManager {
 			HttpServletResponse httpServletResponse,
 			LayoutStructure layoutStructure)
 		throws PortalException {
+
+		if (!_isContainedInLayoutData(
+				fragmentEntryLink.getFragmentEntryLinkId(), layoutStructure)) {
+
+			return _jsonFactory.createJSONObject();
+		}
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
@@ -456,6 +466,22 @@ public class FragmentEntryLinkManager {
 		return _getInfoForm((FormStyledLayoutStructureItem)layoutStructureItem);
 	}
 
+	private boolean _isContainedInLayoutData(
+			long fragmentEntryLinkId, LayoutStructure unfilteredLayoutStructure)
+		throws InfoPermissionException {
+
+		String layoutData = String.valueOf(
+			LayoutStructureUtil.getLayoutDataJSONObject(
+				unfilteredLayoutStructure));
+
+		LayoutStructure layoutStructure = LayoutStructure.of(layoutData);
+
+		return ArrayUtil.contains(
+			LayoutStructureUtil.getFragmentEntryLinkIds(
+				layoutStructure.getLayoutStructureItems()),
+			fragmentEntryLinkId);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		FragmentEntryLinkManager.class);
 
@@ -471,6 +497,9 @@ public class FragmentEntryLinkManager {
 
 	@Reference
 	private FragmentEntryLinkHelper _fragmentEntryLinkHelper;
+
+	@Reference
+	private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;
 
 	@Reference
 	private FragmentEntryLocalService _fragmentEntryLocalService;
