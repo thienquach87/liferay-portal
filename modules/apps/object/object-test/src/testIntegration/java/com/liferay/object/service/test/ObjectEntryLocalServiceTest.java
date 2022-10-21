@@ -2582,7 +2582,7 @@ public class ObjectEntryLocalServiceTest {
 		Assert.assertNotNull(
 			ReflectionTestUtil.getFieldValue(objectEntry1, "_values"));
 		Assert.assertEquals(
-			String.valueOf(objectEntry1.getObjectEntryId()),
+			String.valueOf(objectEntry1.getUuid()),
 			objectEntry1.getExternalReferenceCode());
 
 		objectEntry1 = _objectEntryLocalService.updateObjectEntry(
