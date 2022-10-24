@@ -15,22 +15,34 @@
 package com.liferay.layout.content.page.editor.web.internal.util.layout.structure;
 
 import com.liferay.fragment.service.FragmentEntryLinkLocalServiceUtil;
+import com.liferay.info.exception.InfoPermissionException;
+import com.liferay.info.item.InfoItemServiceTracker;
+import com.liferay.info.permission.provider.InfoPermissionProvider;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructureRel;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalServiceUtil;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureRelLocalServiceUtil;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureServiceUtil;
+import com.liferay.layout.util.constants.LayoutDataItemTypeConstants;
 import com.liferay.layout.util.structure.DeletedLayoutStructureItem;
+import com.liferay.layout.util.structure.FormStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.FragmentStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.layout.util.structure.LayoutStructureItem;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Víctor Galán
@@ -107,6 +119,49 @@ public class LayoutStructureUtil {
 		return ArrayUtil.toLongArray(fragmentEntryLinkIds);
 	}
 
+	public static JSONObject getLayoutDataJSONObject(
+			LayoutStructure layoutStructure)
+		throws InfoPermissionException {
+
+		List<LayoutStructureItem> layoutStructureItems = ListUtil.filter(
+			layoutStructure.getLayoutStructureItems(),
+			layoutStructureItem -> LayoutDataItemTypeConstants.TYPE_FORM.equals(
+				layoutStructureItem.getItemType()));
+
+		for (LayoutStructureItem layoutStructureItem : layoutStructureItems) {
+			if (!_checkPermission(
+					(FormStyledLayoutStructureItem)layoutStructureItem)) {
+
+				LayoutStructureItem parentLayoutStructureItem =
+					layoutStructure.getLayoutStructureItem(
+						layoutStructureItem.getParentItemId());
+
+				List<String> mainChildrenItemIds = ListUtil.remove(
+					parentLayoutStructureItem.getChildrenItemIds(),
+					ListUtil.toList(layoutStructureItem.getItemId()));
+
+				parentLayoutStructureItem.setChildrenItemIds(
+					mainChildrenItemIds);
+
+				layoutStructure.addLayoutStructureItem(
+					parentLayoutStructureItem);
+
+				layoutStructure.deleteLayoutStructureItem(
+					layoutStructureItem.getItemId());
+			}
+		}
+
+		return layoutStructure.toJSONObject();
+	}
+
+	public static JSONObject getLayoutDataJSONObject(
+			long groupId, long plid, long segmentsExperienceId)
+		throws PortalException {
+
+		return getLayoutDataJSONObject(
+			getLayoutStructure(groupId, plid, segmentsExperienceId));
+	}
+
 	public static LayoutStructure getLayoutStructure(
 			long groupId, long plid, long segmentsExperienceId)
 		throws PortalException {
@@ -147,7 +202,46 @@ public class LayoutStructureUtil {
 			updateLayoutPageTemplateStructureData(
 				groupId, plid, segmentsExperienceId, dataJSONObject.toString());
 
-		return dataJSONObject;
+		return getLayoutDataJSONObject(layoutStructure);
+	}
+
+	private static boolean _checkPermission(
+			FormStyledLayoutStructureItem formStyledLayoutStructureItem)
+		throws InfoPermissionException {
+
+		long classNameId = formStyledLayoutStructureItem.getClassNameId();
+
+		if (classNameId <= 0) {
+			return true;
+		}
+
+		InfoPermissionProvider infoPermissionProvider =
+			_serviceTracker.getFirstInfoItemService(
+				InfoPermissionProvider.class,
+				PortalUtil.getClassName(classNameId));
+
+		if ((infoPermissionProvider == null) ||
+			infoPermissionProvider.hasViewPermission(
+				PermissionThreadLocal.getPermissionChecker())) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private static final InfoItemServiceTracker _serviceTracker;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(InfoItemServiceTracker.class);
+
+		ServiceTracker<InfoItemServiceTracker, InfoItemServiceTracker>
+			serviceTracker = new ServiceTracker<>(
+				bundle.getBundleContext(), InfoItemServiceTracker.class, null);
+
+		serviceTracker.open();
+
+		_serviceTracker = serviceTracker.getService();
 	}
 
 }

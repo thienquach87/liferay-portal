@@ -21,7 +21,6 @@ import com.liferay.layout.content.page.editor.constants.ContentPageEditorPortlet
 import com.liferay.layout.content.page.editor.web.internal.segments.SegmentsExperienceUtil;
 import com.liferay.layout.content.page.editor.web.internal.util.FragmentEntryLinkManager;
 import com.liferay.layout.content.page.editor.web.internal.util.layout.structure.LayoutStructureUtil;
-import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.portal.kernel.comment.CommentManager;
@@ -112,8 +111,8 @@ public class DuplicateSegmentsExperienceMVCActionCommand
 				duplicatedSegmentsExperience.getSegmentsExperienceId())
 		).put(
 			"layoutData",
-			_getLayoutDataJSONObject(
-				themeDisplay.getPlid(), themeDisplay.getScopeGroupId(),
+			LayoutStructureUtil.getLayoutDataJSONObject(
+				themeDisplay.getScopeGroupId(), themeDisplay.getPlid(),
 				duplicatedSegmentsExperience.getSegmentsExperienceId())
 		).put(
 			"segmentsExperience",
@@ -150,18 +149,6 @@ public class DuplicateSegmentsExperienceMVCActionCommand
 		}
 
 		return fragmentEntryLinksJSONObject;
-	}
-
-	private JSONObject _getLayoutDataJSONObject(
-			long classPK, long groupId, long segmentsExperienceId)
-		throws Exception {
-
-		LayoutPageTemplateStructure layoutPageTemplateStructure =
-			_layoutPageTemplateStructureLocalService.
-				fetchLayoutPageTemplateStructure(groupId, classPK, true);
-
-		return _jsonFactory.createJSONObject(
-			layoutPageTemplateStructure.getData(segmentsExperienceId));
 	}
 
 	@Reference

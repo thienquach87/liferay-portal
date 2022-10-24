@@ -19,7 +19,6 @@ import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.layout.content.page.editor.constants.ContentPageEditorPortletKeys;
 import com.liferay.layout.content.page.editor.web.internal.util.ContentUtil;
 import com.liferay.layout.content.page.editor.web.internal.util.layout.structure.LayoutStructureUtil;
-import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.layout.util.structure.LayoutStructureItem;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -100,14 +99,9 @@ public class UpdateRowColumnsMVCActionCommand
 			"deletedFragmentEntryLinkIds", deletedFragmentEntryLinkIds.toArray()
 		).put(
 			"layoutData",
-			() -> {
-				LayoutStructure layoutStructure =
-					LayoutStructureUtil.getLayoutStructure(
-						themeDisplay.getScopeGroupId(), themeDisplay.getPlid(),
-						segmentsExperienceId);
-
-				return layoutStructure.toJSONObject();
-			}
+			LayoutStructureUtil.getLayoutDataJSONObject(
+				themeDisplay.getScopeGroupId(), themeDisplay.getPlid(),
+				segmentsExperienceId)
 		).put(
 			"pageContents",
 			ContentUtil.getPageContentsJSONArray(

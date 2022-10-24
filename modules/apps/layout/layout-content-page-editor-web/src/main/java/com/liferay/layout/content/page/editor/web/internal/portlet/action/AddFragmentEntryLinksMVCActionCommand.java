@@ -175,7 +175,8 @@ public class AddFragmentEntryLinksMVCActionCommand
 		).put(
 			"fragmentEntryLinks", fragmentEntryLinksJSONObject
 		).put(
-			"layoutData", layoutStructure.toJSONObject()
+			"layoutData",
+			LayoutStructureUtil.getLayoutDataJSONObject(layoutStructure)
 		);
 	}
 

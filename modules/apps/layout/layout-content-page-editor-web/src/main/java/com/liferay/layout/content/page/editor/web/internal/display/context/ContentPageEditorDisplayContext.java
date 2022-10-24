@@ -682,11 +682,8 @@ public class ContentPageEditorDisplayContext {
 				LocaleUtil.toLanguageId(themeDisplay.getSiteDefaultLocale())
 			).put(
 				"layoutData",
-				() -> {
-					LayoutStructure layoutStructure = _getLayoutStructure();
-
-					return layoutStructure.toJSONObject();
-				}
+				LayoutStructureUtil.getLayoutDataJSONObject(
+					_getLayoutStructure())
 			).put(
 				"mappingFields", _getMappingFieldsJSONObject()
 			).put(

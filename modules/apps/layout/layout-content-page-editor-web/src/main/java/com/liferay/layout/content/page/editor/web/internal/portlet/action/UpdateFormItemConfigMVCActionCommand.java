@@ -529,7 +529,9 @@ public class UpdateFormItemConfigMVCActionCommand extends BaseMVCActionCommand {
 			jsonObject.put(
 				"addedFragmentEntryLinks", addedFragmentEntryLinksJSONObject
 			).put(
-				"layoutData", updatedLayoutStructure.toJSONObject()
+				"layoutData",
+				LayoutStructureUtil.getLayoutDataJSONObject(
+					updatedLayoutStructure)
 			).put(
 				"removedFragmentEntryLinkIds",
 				removedLayoutStructureItemsJSONArray
