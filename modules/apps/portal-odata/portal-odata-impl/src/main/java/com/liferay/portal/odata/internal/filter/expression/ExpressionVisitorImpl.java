@@ -14,6 +14,7 @@
 
 package com.liferay.portal.odata.internal.filter.expression;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.filter.expression.BinaryExpression;
 import com.liferay.portal.odata.filter.expression.Expression;
@@ -166,7 +167,8 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 		}
 		else if (edmType instanceof EdmString) {
 			return new LiteralExpressionImpl(
-				literal.getText(), LiteralExpression.Type.STRING);
+				_normalizeStringLiteral(literal.getText()),
+				LiteralExpression.Type.STRING);
 		}
 		else if ((edmType == null) ||
 				 Objects.equals("null", literal.getText())) {
@@ -315,6 +317,21 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 		}
 
 		return Optional.empty();
+	}
+
+	private String _normalizeStringLiteral(String literal) {
+		literal = StringUtil.toLowerCase(literal);
+
+		literal = StringUtil.unquote(literal);
+
+		String normalizedLiteral = StringUtil.replace(
+			literal, StringPool.DOUBLE_APOSTROPHE, StringPool.APOSTROPHE);
+
+		if (StringUtil.equals(normalizedLiteral, literal)) {
+			return normalizedLiteral;
+		}
+
+		return StringPool.QUOTE + normalizedLiteral + StringPool.QUOTE;
 	}
 
 }
