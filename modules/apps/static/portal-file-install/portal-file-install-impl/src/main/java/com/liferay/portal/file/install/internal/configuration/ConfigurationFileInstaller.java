@@ -28,8 +28,12 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PropsValues;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.net.URL;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -53,13 +57,13 @@ public class ConfigurationFileInstaller implements FileInstaller {
 	}
 
 	@Override
-	public boolean canTransformURL(File file) {
+	public boolean canTransformURL(File file) throws IOException {
 		String name = file.getName();
 
-		if (name.endsWith(".config")) {
+		if (name.endsWith(".config") && _verifyConfigPath(file)) {
 			return true;
 		}
-		else if (name.endsWith(".cfg")) {
+		else if (name.endsWith(".cfg") && _verifyConfigPath(file)) {
 			if (PropsValues.MODULE_FRAMEWORK_FILE_INSTALL_CFG_ENABLED) {
 				return true;
 			}
@@ -304,6 +308,14 @@ public class ConfigurationFileInstaller implements FileInstaller {
 		}
 
 		return new String[] {pid, null};
+	}
+
+	private boolean _verifyConfigPath(File file) throws IOException {
+		Path configsPath = Paths.get(PropsValues.MODULE_FRAMEWORK_CONFIGS_DIR);
+
+		Path filePath = file.toPath();
+
+		return filePath.startsWith(configsPath.toRealPath());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
