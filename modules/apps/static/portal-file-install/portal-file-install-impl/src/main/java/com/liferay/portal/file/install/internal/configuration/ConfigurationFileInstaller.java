@@ -56,19 +56,22 @@ public class ConfigurationFileInstaller implements FileInstaller {
 	@Override
 	public boolean canTransformURL(File file) {
 		String name = file.getName();
+		String path = file.getParent();
 
-		if (name.endsWith(".config")) {
-			return true;
-		}
-		else if (name.endsWith(".cfg")) {
-			if (PropsValues.MODULE_FRAMEWORK_FILE_INSTALL_CFG_ENABLED) {
+		if (StringUtil.equals(path, PropsValues.MODULE_FRAMEWORK_CONFIGS_DIR)) {
+			if (name.endsWith(".config")) {
 				return true;
 			}
+			else if (name.endsWith(".cfg")) {
+				if (PropsValues.MODULE_FRAMEWORK_FILE_INSTALL_CFG_ENABLED) {
+					return true;
+				}
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unable to install .cfg file " + file +
-						", please use .config file instead.");
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Unable to install .cfg file " + file +
+							", please use .config file instead.");
+				}
 			}
 		}
 
