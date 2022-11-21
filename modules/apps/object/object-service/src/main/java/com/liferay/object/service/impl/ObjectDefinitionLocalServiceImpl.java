@@ -199,7 +199,12 @@ public class ObjectDefinitionLocalServiceImpl
 			ObjectEntryTable.INSTANCE.objectEntryId.getName(),
 			objectDefinition.isSystem(), userId);
 
-		return objectDefinition;
+		ObjectField idField = _objectFieldLocalService.getObjectField(
+			objectDefinition.getObjectDefinitionId(),
+			_language.get(LocaleUtil.getDefault(), "id"));
+		objectDefinition.setTitleObjectFieldId(idField.getObjectFieldId());
+
+		return objectDefinitionPersistence.update(objectDefinition);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
