@@ -26,7 +26,7 @@ public class ObjectEntryNameUtil {
 		Matcher matcher = _pattern.matcher(name);
 
 		if (matcher.matches()) {
-			return matcher.group(1);
+			return matcher.group(0);
 		}
 
 		return name;
