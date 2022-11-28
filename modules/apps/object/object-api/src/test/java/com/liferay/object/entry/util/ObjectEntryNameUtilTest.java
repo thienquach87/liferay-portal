@@ -34,7 +34,8 @@ public class ObjectEntryNameUtilTest {
 	@Test
 	public void testFromTechnicalName() {
 		Assert.assertEquals(
-			"C_Stock", ObjectEntryNameUtil.fromTechnicalName("C_Stock24456"));
+			"C_Stock24456",
+			ObjectEntryNameUtil.fromTechnicalName("C_Stock24456"));
 	}
 
 }
