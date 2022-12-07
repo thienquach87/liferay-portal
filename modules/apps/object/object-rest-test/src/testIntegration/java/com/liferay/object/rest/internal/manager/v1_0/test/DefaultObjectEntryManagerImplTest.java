@@ -325,6 +325,18 @@ public class DefaultObjectEntryManagerImplTest {
 			ObjectFieldSettingConstants.NAME_OBJECT_RELATIONSHIP_ERC_FIELD_NAME,
 			objectField);
 		_objectRelationshipFieldName = objectField.getName();
+
+		_objectDefinition3 = _createObjectDefinition(
+			Arrays.asList(
+				new PrecisionDecimalObjectFieldBuilder(
+				).labelMap(
+					LocalizedMapUtil.getLocalizedMap(
+						RandomTestUtil.randomString())
+				).name(
+					"precisionDecimalObjectFieldName"
+				).objectFieldSettings(
+					Collections.emptyList()
+				).build()));
 	}
 
 	@Test
@@ -539,6 +551,38 @@ public class DefaultObjectEntryManagerImplTest {
 			"{\"le\": \"2020-01-02\", \"ge\": \"2020-01-02\"}");
 
 		_assertCountAggregationObjectFieldValue(1, parentObjectEntry1);
+	}
+
+	@Test
+	public void testGetDecimalObjectFieldSpainLocale() throws Exception {
+		DefaultDTOConverterContext spainDTOConverterContext =
+			new DefaultDTOConverterContext(
+				false, Collections.emptyMap(), _dtoConverterRegistry, null,
+				LocaleUtil.SPAIN, null, _adminUser);
+
+		ObjectEntry parentObjectEntry = _objectEntryManager.addObjectEntry(
+			spainDTOConverterContext, _objectDefinition3,
+			new ObjectEntry() {
+				{
+					properties = HashMapBuilder.<String, Object>put(
+						"externalReferenceCode", "newExternalReferenceCode"
+					).put(
+						"precisionDecimalObjectFieldName", "0,123456789123456"
+					).build();
+				}
+			},
+			ObjectDefinitionConstants.SCOPE_COMPANY);
+
+		ObjectEntry expectedObject = _objectEntryManager.getObjectEntry(
+			spainDTOConverterContext, _objectDefinition3,
+			parentObjectEntry.getId());
+
+		Map<String, Object> properties = expectedObject.getProperties();
+
+		String value = String.valueOf(
+			properties.get("precisionDecimalObjectFieldName"));
+
+		Assert.assertEquals("0,123456789123456", value);
 	}
 
 	@Test
@@ -1298,6 +1342,9 @@ public class DefaultObjectEntryManagerImplTest {
 
 	@DeleteAfterTestRun
 	private ObjectDefinition _objectDefinition2;
+
+	@DeleteAfterTestRun
+	private ObjectDefinition _objectDefinition3;
 
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
