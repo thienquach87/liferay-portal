@@ -72,16 +72,14 @@ public class HorizontalCardTag extends BaseCardTag {
 	}
 
 	public String getTitle() {
-		String title = _title;
-
 		HorizontalCard horizontalCard = getHorizontalCard();
 
 		if ((_title == null) && (horizontalCard != null)) {
-			title = horizontalCard.getTitle();
+			return horizontalCard.getTitle();
 		}
 
 		return LanguageUtil.get(
-			TagResourceBundleUtil.getResourceBundle(pageContext), title);
+			TagResourceBundleUtil.getResourceBundle(pageContext), _title);
 	}
 
 	public void setHorizontalCard(HorizontalCard horizontalCard) {
