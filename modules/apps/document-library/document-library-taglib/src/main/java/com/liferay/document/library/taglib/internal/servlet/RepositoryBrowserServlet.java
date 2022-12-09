@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.upload.UploadServletRequest;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
@@ -185,11 +186,15 @@ public class RepositoryBrowserServlet extends HttpServlet {
 				long parentFolderId = ParamUtil.getLong(
 					httpServletRequest, "parentFolderId");
 
+				String sourceFileName = uploadServletRequest.getFileName(
+					"file");
+
+				String title = FileUtil.stripExtension(sourceFileName);
+
 				_dlAppService.addFileEntry(
-					null, repositoryId, parentFolderId, file.getName(),
-					uploadServletRequest.getContentType("file"),
-					uploadServletRequest.getFileName("file"), null, null, null,
-					file, null, null,
+					null, repositoryId, parentFolderId, sourceFileName,
+					uploadServletRequest.getContentType("file"), title, null,
+					null, null, file, null, null,
 					ServiceContextFactory.getInstance(
 						FileEntry.class.getName(), httpServletRequest));
 
