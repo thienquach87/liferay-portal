@@ -213,6 +213,10 @@ public class ObjectValidationRuleLocalServiceImpl
 				_objectEntryLocalService, payloadJSONObject,
 				_systemObjectDefinitionMetadataRegistry);
 
+		variables.put(
+			"externalReferenceCode",
+			objectDefinition.getExternalReferenceCode());
+
 		for (ObjectValidationRule objectValidationRule :
 				objectValidationRules) {
 
