@@ -115,6 +115,7 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.util.PropsUtil;
+import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
@@ -126,6 +127,10 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import java.text.DateFormat;
 
 import java.util.ArrayList;
@@ -136,11 +141,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
+import org.hsqldb.jdbc.JDBCDriver;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -193,6 +201,8 @@ public class DefaultObjectEntryManagerImplTest {
 
 	@Before
 	public void setUp() throws Exception {
+		_enableOracleSyntax();
+
 		_objectDefinition1 = _createObjectDefinition(
 			Arrays.asList(
 				new TextObjectFieldBuilder(
@@ -1982,6 +1992,30 @@ public class DefaultObjectEntryManagerImplTest {
 		objectFieldSetting.setValue(value);
 
 		return objectFieldSetting;
+	}
+
+	private void _enableOracleSyntax() {
+		if (PropsValues.JDBC_DEFAULT_DRIVER_CLASS_NAME.equals(
+				JDBCDriver.class.getName())) {
+
+			try {
+				Connection connection = JDBCDriver.getConnection(
+					PropsValues.JDBC_DEFAULT_URL,
+					new Properties() {
+						{
+							put("password", PropsValues.JDBC_DEFAULT_PASSWORD);
+							put("user", PropsValues.JDBC_DEFAULT_USERNAME);
+						}
+					});
+
+				Statement statement = connection.createStatement();
+
+				statement.execute("SET DATABASE SQL SYNTAX ORA TRUE");
+			}
+			catch (SQLException sqlException) {
+				throw new RuntimeException(sqlException);
+			}
+		}
 	}
 
 	private Long _getAttachmentObjectFieldValue() throws Exception {
