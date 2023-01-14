@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import React, {forwardRef} from 'react';
 
 import BaseEditor from './BaseEditor';
-
+import {CLASSIC_EDITOR_CONFIG} from './config/ClassicEditorConfiguration';
 const ClassicEditor = forwardRef(
 	(
 		{
@@ -46,15 +46,7 @@ const ClassicEditor = forwardRef(
 					contents={contents}
 					name={name}
 					onBeforeLoad={(CKEDITOR) => {
-						CKEDITOR.disableAutoInline = true;
-						CKEDITOR.dtd.$removeEmpty.i = 0;
-						CKEDITOR.dtd.$removeEmpty.span = 0;
-
-						CKEDITOR.getNextZIndex = function () {
-							return CKEDITOR.dialog._.currentZIndex
-								? CKEDITOR.dialog._.currentZIndex + 10
-								: Liferay.zIndex.WINDOW + 10;
-						};
+						CLASSIC_EDITOR_CONFIG(CKEDITOR);
 					}}
 					onDrop={(event) => {
 						const data = event.data.dataTransfer.getData(
