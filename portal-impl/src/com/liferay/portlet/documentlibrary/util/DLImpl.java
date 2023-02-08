@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.documentlibrary.util;
 
+import com.liferay.document.library.kernel.exception.InvalidFolderException;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
@@ -158,7 +159,9 @@ public class DLImpl implements DL {
 			Folder rootFolder = DLAppLocalServiceUtil.getFolder(rootFolderId);
 
 			if (!folders.contains(rootFolder)) {
-				throw new PortalException("Invalid root folder");
+				throw new InvalidFolderException(
+					InvalidFolderException.INVALID_ROOT_FOLDER,
+					rootFolderId);
 			}
 
 			folders = ListUtil.subList(folders, 0, folders.indexOf(rootFolder));
