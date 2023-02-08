@@ -128,7 +128,8 @@ public class DLFileShortcutTrashHandler extends BaseDLTrashHandler {
 		DLFileShortcut dlFileShortcut = _getDLFileShortcut(classPK);
 
 		return DLUtil.getAbsolutePath(
-			portletRequest, dlFileShortcut.getFolderId());
+			portletRequest, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+			dlFileShortcut.getFolderId());
 	}
 
 	@Override

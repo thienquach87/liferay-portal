@@ -42,13 +42,6 @@ public class DLUtil {
 	}
 
 	public static String getAbsolutePath(
-			PortletRequest portletRequest, long folderId)
-		throws PortalException {
-
-		return _dl.getAbsolutePath(portletRequest, folderId);
-	}
-
-	public static String getAbsolutePath(
 			PortletRequest portletRequest, long rootFolderId, long folderId)
 		throws PortalException {
 

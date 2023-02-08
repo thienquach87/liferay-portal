@@ -137,15 +137,6 @@ public class DLImpl implements DL {
 	}
 
 	@Override
-	public String getAbsolutePath(PortletRequest portletRequest, long folderId)
-		throws PortalException {
-
-		return getAbsolutePath(
-			portletRequest, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
-			folderId);
-	}
-
-	@Override
 	public String getAbsolutePath(
 			PortletRequest portletRequest, long rootFolderId, long folderId)
 		throws PortalException {

@@ -54,9 +54,6 @@ public interface DL {
 
 	public int compareVersions(String version1, String version2);
 
-	public String getAbsolutePath(PortletRequest portletRequest, long folderId)
-		throws PortalException;
-
 	public String getAbsolutePath(
 			PortletRequest portletRequest, long rootFolderId, long folderId)
 		throws PortalException;
