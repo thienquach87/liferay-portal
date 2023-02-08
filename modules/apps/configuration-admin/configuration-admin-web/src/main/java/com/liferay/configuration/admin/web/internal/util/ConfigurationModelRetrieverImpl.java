@@ -24,6 +24,7 @@ import com.liferay.portal.configuration.metatype.definitions.ExtendedMetaTypeSer
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.IOException;
@@ -278,6 +279,10 @@ public class ConfigurationModelRetrieverImpl
 			getConfiguration(pid, scope, scopePK),
 			extendedMetaTypeInformation.getObjectClassDefinition(pid, locale),
 			factory);
+
+		if (!StringUtil.equals(configurationModel.getFactoryPid(), pid)) {
+			configurationModel.setFactoryPid(pid);
+		}
 
 		if (scope.equals(scope.COMPANY) && configurationModel.isSystemScope()) {
 			return null;

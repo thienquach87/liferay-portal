@@ -177,6 +177,10 @@ public class ConfigurationModel implements ExtendedObjectClassDefinition {
 	}
 
 	public String getFactoryPid() {
+		if (_factoryPid != null) {
+			return _factoryPid;
+		}
+
 		if (_extendedObjectClassDefinition instanceof ConfigurationModel) {
 			ConfigurationModel configurationModel =
 				(ConfigurationModel)_extendedObjectClassDefinition;
@@ -366,6 +370,10 @@ public class ConfigurationModel implements ExtendedObjectClassDefinition {
 		return _isScope(Scope.SYSTEM);
 	}
 
+	public void setFactoryPid(String factoryPid) {
+		_factoryPid = factoryPid;
+	}
+
 	private String _getLabelAttributeValue() {
 		String factoryInstanceLabelAttribute = getLabelAttribute();
 
@@ -401,5 +409,6 @@ public class ConfigurationModel implements ExtendedObjectClassDefinition {
 	private final ExtendedObjectClassDefinition _extendedObjectClassDefinition;
 	private final Map<String, String> _extensionAttributes;
 	private final boolean _factory;
+	private String _factoryPid;
 
 }
