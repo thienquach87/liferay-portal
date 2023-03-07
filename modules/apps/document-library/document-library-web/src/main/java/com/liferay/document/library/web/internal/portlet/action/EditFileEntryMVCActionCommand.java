@@ -348,15 +348,6 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 			String portletResource = ParamUtil.getString(
 				actionRequest, "portletResource");
-
-			if (Validator.isNotNull(portletResource) ||
-				cmd.equals(Constants.ADD_DYNAMIC)) {
-
-				hideDefaultSuccessMessage(actionRequest);
-
-				MultiSessionMessages.add(
-					actionRequest, portletResource + "requestProcessed");
-			}
 		}
 		catch (Exception exception) {
 			_handleUploadException(
