@@ -220,6 +220,7 @@ export function parseNotifications(node) {
 			};
 		}
 		else if (item['user']) {
+			let recipients;
 			if (item['user'].some((item) => item['email-address'])) {
 				const emailAddress = [];
 
@@ -227,7 +228,7 @@ export function parseNotifications(node) {
 					emailAddress.push(item['email-address']);
 				});
 
-				notifications.recipients[index] = {
+				recipients = {
 					assignmentType: ['user'],
 					emailAddress,
 				};
@@ -240,7 +241,7 @@ export function parseNotifications(node) {
 					userId.push(item['user-id']);
 				});
 
-				notifications.recipients[index] = {
+				recipients = {
 					assignmentType: ['user'],
 					userId,
 				};
@@ -253,11 +254,15 @@ export function parseNotifications(node) {
 					screenName.push(item['screen-name']);
 				});
 
-				notifications.recipients[index] = {
+				recipients = {
 					assignmentType: ['user'],
 					screenName,
 				};
 			}
+			
+			notifications.recipients[index] = recipients
+				? recipients
+				: {assignmentType: ['user']};
 		}
 		else if (item['role-type']) {
 			notifications.recipients[index] = {
