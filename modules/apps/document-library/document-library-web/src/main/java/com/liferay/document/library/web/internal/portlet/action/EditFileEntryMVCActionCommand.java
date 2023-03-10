@@ -189,7 +189,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 		try {
 			UploadException uploadException =
-				(UploadException)actionRequest.getAttribute(
+				(UploadException) actionRequest.getAttribute(
 					WebKeys.UPLOAD_EXCEPTION);
 
 			if (uploadException != null) {
@@ -197,7 +197,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 				if (cmd.equals(Constants.ADD_TEMP)) {
 					if (throwable instanceof
-							FileUploadBase.IOFileUploadException) {
+						FileUploadBase.IOFileUploadException) {
 
 						if (_log.isInfoEnabled()) {
 							_log.info("Temporary upload was cancelled");
@@ -235,7 +235,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 					uploadPortletRequest);
 
 				try (AutoCloseable autoCloseable = _pushServiceContext(
-						serviceContext)) {
+					serviceContext)) {
 
 					fileEntry = _updateFileEntry(
 						portletConfig, actionRequest, actionResponse,
@@ -295,7 +295,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 				SessionMessages.add(
 					actionRequest,
 					_portal.getPortletId(actionRequest) +
-						SessionMessages.KEY_SUFFIX_FORCE_SEND_REDIRECT);
+					SessionMessages.KEY_SUFFIX_FORCE_SEND_REDIRECT);
 
 				hideDefaultSuccessMessage(actionRequest);
 
@@ -348,6 +348,11 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 			String portletResource = ParamUtil.getString(
 				actionRequest, "portletResource");
+			if (Validator.isNotNull(portletResource) ||
+				cmd.equals(Constants.ADD_DYNAMIC)) {
+
+				hideDefaultSuccessMessage(actionRequest);
+			}
 		}
 		catch (Exception exception) {
 			_handleUploadException(
