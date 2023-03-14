@@ -14,6 +14,7 @@
 
 package com.liferay.portal.vulcan.util;
 
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -22,6 +23,7 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.net.URI;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -38,7 +40,7 @@ public class UriInfoUtil {
 	}
 
 	public static UriBuilder getBaseUriBuilder(UriInfo uriInfo) {
-		return _updateUriBuilder(uriInfo.getBaseUriBuilder());
+		return _updateUriBuilder(uriInfo);
 	}
 
 	private static boolean _isHttpsEnabled() {
@@ -52,7 +54,9 @@ public class UriInfoUtil {
 		return false;
 	}
 
-	private static UriBuilder _updateUriBuilder(UriBuilder uriBuilder) {
+	private static UriBuilder _updateUriBuilder(UriInfo uriInfo) {
+		UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+
 		if (!Validator.isBlank(PortalUtil.getPathContext())) {
 			URI uri = uriBuilder.build();
 
@@ -61,6 +65,21 @@ public class UriInfoUtil {
 
 		if (_isHttpsEnabled()) {
 			uriBuilder.scheme(Http.HTTPS);
+
+			MultivaluedMap<String, String> queryParameters =
+				uriInfo.getQueryParameters();
+
+			String contextUriHost = queryParameters.getFirst("contextUriHost");
+
+			if (contextUriHost != null) {
+				uriBuilder.host(contextUriHost);
+			}
+
+			String contextUriPort = queryParameters.getFirst("contextUriPort");
+
+			if (contextUriPort != null) {
+				uriBuilder.port(GetterUtil.getInteger(contextUriPort));
+			}
 		}
 
 		return uriBuilder;

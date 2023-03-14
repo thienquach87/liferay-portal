@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 
 import java.io.Serializable;
 
+import java.net.URI;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ public class ParametersUtil {
 			_toMap(ignoredParameters, contextUriInfo.getPathParameters())
 		).putAll(
 			_toMap(ignoredParameters, contextUriInfo.getQueryParameters())
+		).putAll(
+			_toMap(contextUriInfo.getBaseUri())
 		).build();
 	}
 
@@ -61,6 +65,17 @@ public class ParametersUtil {
 			if (!values.isEmpty()) {
 				parameters.put(key, values.get(0));
 			}
+		}
+
+		return parameters;
+	}
+
+	private static Map<String, Serializable> _toMap(URI baseURI) {
+		Map<String, Serializable> parameters = new HashMap<>();
+
+		if (baseURI != null) {
+			parameters.put("contextUriHost", baseURI.getHost());
+			parameters.put("contextUriPort", baseURI.getPort());
 		}
 
 		return parameters;
