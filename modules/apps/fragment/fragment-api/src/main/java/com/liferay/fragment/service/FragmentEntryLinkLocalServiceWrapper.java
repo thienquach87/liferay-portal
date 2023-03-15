@@ -477,6 +477,15 @@ public class FragmentEntryLinkLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<FragmentEntryLink>
+		getFragmentEntryLinksByFragmentEntryId(
+			long fragmentEntryId, boolean deleted) {
+
+		return _fragmentEntryLinkLocalService.
+			getFragmentEntryLinksByFragmentEntryId(fragmentEntryId, deleted);
+	}
+
+	@Override
 	public java.util.List<FragmentEntryLink> getFragmentEntryLinksByPlid(
 		long groupId, long plid) {
 
@@ -568,6 +577,15 @@ public class FragmentEntryLinkLocalServiceWrapper
 
 		return _fragmentEntryLinkLocalService.
 			getFragmentEntryLinksCountByFragmentEntryId(fragmentEntryId);
+	}
+
+	@Override
+	public int getFragmentEntryLinksCountByFragmentEntryId(
+		long fragmentEntryId, boolean deleted) {
+
+		return _fragmentEntryLinkLocalService.
+			getFragmentEntryLinksCountByFragmentEntryId(
+				fragmentEntryId, deleted);
 	}
 
 	@Override

@@ -348,6 +348,10 @@ public interface FragmentEntryLinkLocalService
 		long fragmentEntryId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<FragmentEntryLink> getFragmentEntryLinksByFragmentEntryId(
+		long fragmentEntryId, boolean deleted);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<FragmentEntryLink> getFragmentEntryLinksByPlid(
 		long groupId, long plid);
 
@@ -400,6 +404,10 @@ public interface FragmentEntryLinkLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getFragmentEntryLinksCountByFragmentEntryId(
 		long fragmentEntryId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getFragmentEntryLinksCountByFragmentEntryId(
+		long fragmentEntryId, boolean deleted);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getFragmentEntryLinksCountByPlid(long groupId, long plid);

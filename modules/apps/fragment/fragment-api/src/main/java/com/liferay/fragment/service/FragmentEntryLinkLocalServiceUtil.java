@@ -421,6 +421,14 @@ public class FragmentEntryLinkLocalServiceUtil {
 			fragmentEntryId);
 	}
 
+	public static List<FragmentEntryLink>
+		getFragmentEntryLinksByFragmentEntryId(
+			long fragmentEntryId, boolean deleted) {
+
+		return getService().getFragmentEntryLinksByFragmentEntryId(
+			fragmentEntryId, deleted);
+	}
+
 	public static List<FragmentEntryLink> getFragmentEntryLinksByPlid(
 		long groupId, long plid) {
 
@@ -499,6 +507,13 @@ public class FragmentEntryLinkLocalServiceUtil {
 
 		return getService().getFragmentEntryLinksCountByFragmentEntryId(
 			fragmentEntryId);
+	}
+
+	public static int getFragmentEntryLinksCountByFragmentEntryId(
+		long fragmentEntryId, boolean deleted) {
+
+		return getService().getFragmentEntryLinksCountByFragmentEntryId(
+			fragmentEntryId, deleted);
 	}
 
 	public static int getFragmentEntryLinksCountByPlid(
