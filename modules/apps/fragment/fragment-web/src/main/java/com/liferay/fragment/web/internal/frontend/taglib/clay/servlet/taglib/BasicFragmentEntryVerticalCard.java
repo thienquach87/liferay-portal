@@ -16,6 +16,7 @@ package com.liferay.fragment.web.internal.frontend.taglib.clay.servlet.taglib;
 
 import com.liferay.fragment.constants.FragmentActionKeys;
 import com.liferay.fragment.model.FragmentEntry;
+import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.service.FragmentEntryLinkLocalServiceUtil;
 import com.liferay.fragment.web.internal.security.permission.resource.FragmentPermission;
 import com.liferay.fragment.web.internal.servlet.taglib.util.BasicFragmentEntryActionDropdownItemsProvider;
@@ -27,6 +28,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
@@ -119,11 +121,11 @@ public class BasicFragmentEntryVerticalCard
 
 	@Override
 	public String getSubtitle() {
+
 		return LanguageUtil.format(
 			_httpServletRequest, "x-usages",
-			FragmentEntryLinkLocalServiceUtil.
-				getFragmentEntryLinksCountByFragmentEntryId(
-					fragmentEntry.getFragmentEntryId()));
+			FragmentEntryLinkLocalServiceUtil.getFragmentEntryLinksCountByFragmentEntryId(
+				fragmentEntry.getFragmentEntryId(), false));
 	}
 
 	@Override
