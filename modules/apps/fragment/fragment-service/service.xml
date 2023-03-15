@@ -277,6 +277,10 @@
 			<finder-column name="groupId" />
 			<finder-column name="plid" />
 		</finder>
+		<finder name="F_D" return-type="Collection">
+			<finder-column arrayable-operator="true" name="fragmentEntryId" />
+			<finder-column name="deleted" />
+		</finder>
 		<finder name="G_OFELI_P" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="originalFragmentEntryLinkId" />
