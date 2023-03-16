@@ -289,13 +289,15 @@ public class FragmentEntryLocalServiceImpl
 
 		// Fragment entry
 
-		long fragmentEntryLinkCount =
-			_fragmentEntryLinkPersistence.countByFragmentEntryId(
-				fragmentEntry.getFragmentEntryId());
+		long fragmentEntryLinkCount = _fragmentEntryLinkPersistence.countByF_D(
+			fragmentEntry.getFragmentEntryId(), false);
 
 		if (fragmentEntryLinkCount > 0) {
 			throw new RequiredFragmentEntryException();
 		}
+
+		_fragmentEntryLinkPersistence.removeByFragmentEntryId(
+			fragmentEntry.getFragmentEntryId());
 
 		// Resources
 
