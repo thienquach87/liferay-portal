@@ -1027,22 +1027,22 @@ public class DataLayoutTaglibUtil {
 		private List<Map<String, Object>> _getNestedFields(
 			Map<String, Object> field) {
 
-			List<Map<String, Object>> nestedFields =
+			List<Map<String, Object>> nestedFields = new ArrayList<>();
+
+			List<Map<String, Object>> fieldNestedFields =
 				(List<Map<String, Object>>)field.get("nestedFields");
 
-			if (nestedFields == null) {
-				return new ArrayList<>();
+			if (fieldNestedFields == null) {
+				return nestedFields;
 			}
 
-			List<Map<String, Object>> nestedFieldsList = new ArrayList<>();
+			for (Map<String, Object> nestedField : fieldNestedFields) {
+				nestedFields.add(nestedField);
 
-			for (Map<String, Object> nestedField : nestedFields) {
-				nestedFieldsList.add(nestedField);
-
-				nestedFieldsList.addAll(_getNestedFields(nestedField));
+				nestedFields.addAll(_getNestedFields(nestedField));
 			}
 
-			return nestedFieldsList;
+			return nestedFields;
 		}
 
 		private boolean _isFieldSet(Map<String, Object> field) {
