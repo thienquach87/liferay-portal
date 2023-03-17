@@ -32,7 +32,7 @@ public class ProjectComparatorFactory {
 
 		long id = jsonObject.getLong("id");
 
-		ProjectComparator projectComparator;
+		ProjectComparator projectComparator = null;
 
 		synchronized (_projectComparators) {
 			if (_projectComparators.containsKey(id)) {

@@ -28,7 +28,7 @@ public class TestSuiteFactory {
 	public static TestSuite newTestSuite(JSONObject jsonObject) {
 		long id = jsonObject.getLong("id");
 
-		TestSuite testSuite;
+		TestSuite testSuite = null;
 
 		synchronized (_testSuites) {
 			if (_testSuites.containsKey(id)) {

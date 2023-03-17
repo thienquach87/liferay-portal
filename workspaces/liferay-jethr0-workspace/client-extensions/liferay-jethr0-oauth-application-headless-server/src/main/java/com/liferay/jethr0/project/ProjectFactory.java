@@ -28,7 +28,7 @@ public class ProjectFactory {
 	public static Project newProject(JSONObject jsonObject) {
 		long id = jsonObject.getLong("id");
 
-		Project project;
+		Project project = null;
 
 		synchronized (_projects) {
 			if (_projects.containsKey(id)) {

@@ -30,7 +30,7 @@ public class ProjectPrioritizerFactory {
 
 		long id = jsonObject.getLong("id");
 
-		ProjectPrioritizer projectPrioritizer;
+		ProjectPrioritizer projectPrioritizer = null;
 
 		synchronized (_projectPrioritizers) {
 			if (_projectPrioritizers.containsKey(id)) {
